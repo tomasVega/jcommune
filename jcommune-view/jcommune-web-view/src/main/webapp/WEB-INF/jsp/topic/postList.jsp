@@ -281,9 +281,9 @@
           </p>
         </div>
              
-                   <span class="thumbnail post-userinfo-avatal wraptocenter">
-                        <img src="${pageContext.request.contextPath}/users/${post.userCreated.id}/avatar" alt=""/>
-                   </span>
+        <span class="thumbnail post-userinfo-avatal wraptocenter">
+          <img src="${pageContext.request.contextPath}/users/${post.userCreated.id}/avatar" alt=""/>
+        </span>
 
         <div>
           &nbsp;<br/>
