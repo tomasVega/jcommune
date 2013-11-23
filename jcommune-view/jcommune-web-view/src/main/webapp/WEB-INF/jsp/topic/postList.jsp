@@ -265,14 +265,9 @@
     </tr>
     <tr class="post-content-tr">
       <td class="userinfo">
+        <div style="float: left">
         <div>
           <p>
-            <spring:message var="onlineTip" code="label.tips.user_online"/>
-            <spring:message var="offlineTip" code="label.tips.user_offline"/>
-            <c:set var="online" value='<i class="icon-online" title="${onlineTip}"></i>'/>
-            <c:set var="offline" value='<i class="icon-offline" title="${offlineTip}"></i>'/>
-            <jtalks:ifContains collection="${usersOnline}" object="${post.userCreated}"
-                               successMessage="${online}" failMessage="${offline}"/>
             <a class='post-userinfo-username'
                href="${pageContext.request.contextPath}/users/${post.userCreated.id}"
                title="<spring:message code='label.tips.view_profile'/>">
@@ -285,25 +280,11 @@
           <img src="${pageContext.request.contextPath}/users/${post.userCreated.id}/avatar" alt=""/>
         </span>
 
-        <div>
-          &nbsp;<br/>
-
-          <div>
-            <spring:message code="label.topic.registered"/>
-            <span class="space-left-small">
-              <jtalks:format pattern="dd.MM.yy" value="${post.userCreated.registrationDate}"/>
-            </span>
-          </div>
-          <c:if test="${post.userCreated.location != null}">
-            <div>
-              <spring:message code="label.topic.from_whence"/>
-              <span class="space-left-small"><c:out value="${post.userCreated.location}"/></span>
-            </div>
-          </c:if>
-          <div>
+          <div style="">
             <spring:message code="label.topic.message_count"/>
             <span class="space-left-small"><c:out value="${post.userCreated.postCount}"/></span>
           </div>
+        </div>
           <sec:authorize access="isAuthenticated()">
             <sec:authentication property="principal.id" var="userId"/>
             <jtalks:hasPermission targetId='${userId}' targetType='USER'
