@@ -104,7 +104,7 @@ public class BBCodeService {
         this.postprocessors.addAll(postprocessors);
     }
 
-    String stripBBCodes(String bbCode) {
+    public String stripBBCodes(String bbCode) {
         return stripBBCodesProcessor.process(bbCode);
     }
 }

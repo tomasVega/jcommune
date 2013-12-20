@@ -18,6 +18,11 @@ import org.jtalks.jcommune.web.validation.annotations.BbCodeAwareSize;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import org.jtalks.jcommune.service.UserService;
+import org.jtalks.jcommune.service.nontransactional.BBCodeService;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 /**
  * Extends default @Size annotation to ignore BB codes in string.
@@ -25,10 +30,12 @@ import javax.validation.ConstraintValidatorContext;
  *
  * @author Evgeniy Naumenko
  */
-public class BbCodeAwareSizeValidator implements ConstraintValidator<BbCodeAwareSize, String> {
+public class BbCodeAwareSizeValidator implements ConstraintValidator<BbCodeAwareSize, String>, ApplicationContextAware {
 
     private int min;
     private int max;
+    private ApplicationContext context;
+    private BBCodeService bbCodeService;
 
     /**
      * {@inheritDoc}
@@ -59,6 +66,18 @@ public class BbCodeAwareSizeValidator implements ConstraintValidator<BbCodeAware
      * @return plain text without BB tags
      */
     private String removeBBCodes(String source) {
-        return source.replaceAll("\\[.*?\\]", "");
+        return getBBCodeService().stripBBCodes(source);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext ac) throws BeansException {
+        this.context = ac;
+    }
+    
+    private BBCodeService getBBCodeService() {
+        if (bbCodeService == null) {
+            bbCodeService = this.context.getBean(BBCodeService.class);
+        }
+        return bbCodeService;
     }
 }
