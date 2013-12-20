@@ -54,6 +54,21 @@ public class BBCodeServiceTest {
         assertEquals(service.convertBbToHtml(bbCode), expectedResult);
     }
 
+    @Test(dataProvider = "bbCodesToStrip") 
+    public void testBBCodesStripping(String bbCode, String expected, String message) {
+        assertEquals(service.stripBBCodes(bbCode), expected, message);
+    }
+    
+    @DataProvider
+    public Object[][] bbCodesToStrip() {
+        return new String[][]{ 
+            {"[b]text[/b]", "text", "strip [b]"},
+            {"[b][b]text[/b]", "[b]text", "unclosed tags are not stripped"}, 
+            {"[not a tag][][/b]text[/b][\\i]", "[not a tag][][/b]text[/b][\\i]", 
+                "invalid tags not becomes stripped"}
+        };
+    }
+    
     @DataProvider
     public Object[][] validBBCodes() {
         return new Object[][]{  // {"bb code", "html code"}

@@ -32,7 +32,8 @@ public class BBCodeService {
     private static final String QUOTE_PATEERN = "[quote=\"%s\"]%s[/quote]";
     /** Processor is thread safe as it's explicitly stated in documentation */
     private final TextProcessor processor = BBProcessorFactory.getInstance().create();
-
+    /** Processor to strip bb-codes */
+    private final TextProcessor stripBBCodesProcessor = BBProcessorFactory.getInstance().createFromResource("kefirbb-strip-config.xml");
     /** Preprocessors of BB encoded text used before actual BB2HTML converter */
     private final List<TextProcessor> preprocessors = new ArrayList<TextProcessor>();
 
@@ -103,4 +104,7 @@ public class BBCodeService {
         this.postprocessors.addAll(postprocessors);
     }
 
+    String stripBBCodes(String bbCode) {
+        return stripBBCodesProcessor.process(bbCode);
+    }
 }
