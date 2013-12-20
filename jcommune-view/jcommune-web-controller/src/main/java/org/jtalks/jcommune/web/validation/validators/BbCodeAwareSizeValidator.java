@@ -21,6 +21,7 @@ import javax.validation.ConstraintValidatorContext;
 import org.jtalks.jcommune.service.UserService;
 import org.jtalks.jcommune.service.nontransactional.BBCodeService;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
@@ -36,7 +37,12 @@ public class BbCodeAwareSizeValidator implements ConstraintValidator<BbCodeAware
     private int max;
     private ApplicationContext context;
     private BBCodeService bbCodeService;
-
+    
+    @Autowired
+    public BbCodeAwareSizeValidator(BBCodeService bbCodeService) {
+        this.bbCodeService = bbCodeService;
+    }
+    
     /**
      * {@inheritDoc}
      */
