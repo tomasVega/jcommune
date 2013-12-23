@@ -79,16 +79,6 @@ public class BBCodeService {
         return bbEncodedText;
     }
 
-    /**
-     * Removes all BB codes from the text given, simply cutting out all [...]-style tags found.
-     *
-     * @param source text to cleanup
-     * @return plain text without BB tags
-     */
-    public String removeBBCodes(String source) {
-        return source.replaceAll("\\[.*?\\]", "");
-    }
-
     /** @param preprocessors objects that process input text from users post before the actual bb-converting is
      *                       started */
     public void setPreprocessors(List<TextProcessor> preprocessors) {
@@ -104,6 +94,13 @@ public class BBCodeService {
         this.postprocessors.addAll(postprocessors);
     }
 
+    /**
+     * Remove bb-codes from the specified string.
+     * It remove ONLY VALID bb-codes. So, something like [zzz][/zzz] is unchanged.
+     * Also it doesn't strip open bb-code when there are no appropriate close tag.
+     * @param bbCode text with bb-codes
+     * @return text without bb-codes
+     */
     public String stripBBCodes(String bbCode) {
         return stripBBCodesProcessor.process(bbCode);
     }
