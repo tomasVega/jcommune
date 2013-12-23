@@ -49,14 +49,6 @@ public class BbCodeAwareSizeValidatorTest {
     }
 
     @Test
-    public void testRemoveBBCodes() {
-        String incoming = "[bb] lol [code] [/omg]";
-        String expected = " lol  ";
-
-        //assertEquals(validator.removeBBCodes(incoming), expected);
-    }
-
-    @Test
     public void testValidationPassed() {
         String source = "1234567";
         Mockito.when(bbCodeService.stripBBCodes(source)).thenReturn(source);

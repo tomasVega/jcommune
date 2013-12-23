@@ -18,7 +18,6 @@ import org.jtalks.jcommune.web.validation.annotations.BbCodeAwareSize;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
-import org.jtalks.jcommune.service.UserService;
 import org.jtalks.jcommune.service.nontransactional.BBCodeService;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
