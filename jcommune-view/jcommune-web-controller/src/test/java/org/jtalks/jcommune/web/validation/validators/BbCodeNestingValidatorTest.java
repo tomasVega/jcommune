@@ -21,8 +21,6 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import static org.apache.commons.lang.StringUtils.repeat;
-import org.junit.Assert;
 import org.mockito.Mock;
 import static org.mockito.Mockito.when;
 import org.mockito.MockitoAnnotations;
@@ -39,7 +37,7 @@ public class BbCodeNestingValidatorTest {
     @BeforeMethod
     public void initMocks() throws NoSuchFieldException {
         MockitoAnnotations.initMocks(this);
-        
+        // limit nesting to 2
         when(annotation.maxNestingValue()).thenReturn(2);
         when(userService.getCurrentUser()).thenReturn(new JCUser("", "", ""));
         
@@ -48,106 +46,41 @@ public class BbCodeNestingValidatorTest {
     }
 
     @Test
-    public void testTooDeepNestingWithListItems() {
-        assertFalse(bbCodeNestingValidator.isValid("[list][*]zzz[list][*]zzz[/*][/list][/*][/list]", null),
-                    "Nesting limit is 2, but actual nesting is 4");        
-    }
-    
-    @Test
-    public void testListItemsNesting() {
-        assertFalse(bbCodeNestingValidator.isValid("[list][*]zzz[list][*]zzz[/*][/list][/*][/list]", null),
-                    "Nesting limit is 2, but actual nesting is 4");
-        assertTrue(bbCodeNestingValidator.isValid("[*][*][*][*][*]", null), "limit doesn't affect [*]");
-    }
-    
-    @Test
-    public void testNestingLimit() {
-        assertInvalid("[b][b][b]text", "The limit is 2, actual nesting is 3");
-        assertInvalid("[b][b][b]text[/b][/b][/b]", "The limit is 2, actual nesting is 3");
-        assertValid("[b][b]text[/b][/b]", "The limit is 2, actual nesting is 2");
-        assertValid("[/b][/b][/b][/b][/b][/b]", "The limit doesn't affect closing tags without respective open tags");
-        assertValid("[b]1[/b]2[b]3[/b]4[b]5[/b]6[b]7[/b]8[b]9[/b]", "The limit is 2, actual nesting is 1");
-    }
-    
-    @Test
-    public void testQuotes() {
-        assertInvalid("[quote][b][b]text[/b][/b][/quote]", "The limit is 2, actual nesting is 3");
-        assertValid("[quote][b]text[/b][/quote]", "The limit is 2, actual nesting is 2");
-    }
-    
-    @Test
-    public void testNamedQuotes() {
-        assertValid("[quote=\"name\"][b]text[/b][/qoute]");
-        assertInvalid("[quote=\"name\"][b][b]text[/b][/b][/qoute]");
-    }
-
-    void assertValid(String toValidate) {
-        assertValid(toValidate, null);
-    }
-    
-    public void assertValid(String toValidate, String message) {
-        if (!bbCodeNestingValidator.isValid(toValidate, null)) {
-            if (message == null) {
-                Assert.fail(toValidate + ": expected <valid>, but was <invalid>");
-            } else {
-                Assert.fail(toValidate + " : " + message + ": expected <valid>, but was <invalid>");
-            }
-        }
-    }
-    
-    public void assertInvalid(String toValidate, String message) {
-        if (bbCodeNestingValidator.isValid(toValidate, null)) {
-            if (message == null) {
-                Assert.fail(toValidate + ": expected <invalid>, but was <valid>");
-            } else {
-                Assert.fail(toValidate + " : "  + message + ": expected <invalid>, but was <valid>");
-            }
-        }
-    }
-
-    @Test
     public void nullAndEmptyStringShouldBeTreatedAsValid() {
         assertTrue(bbCodeNestingValidator.isValid(null, null));
         assertTrue(bbCodeNestingValidator.isValid("", null));
     }
     
+    @Test(dataProvider = "validMessages")
+    public void testValidMessages(String message) {
+        assertTrue(bbCodeNestingValidator.isValid(message, null), message);
+    }
+    
+    @Test(dataProvider = "invalidMessages")
+    public void testInvalidMessages(String message) {
+        assertFalse(bbCodeNestingValidator.isValid(message, null), message);
+    }    
+    
+    @DataProvider
+    public String[][] invalidMessages() {
+        return new String[][] {
+            {"[b][b][b]text"},
+            {"[quote][b][i]text[/i][/b][/quote]"},
+            {"[quote=\"name\"][b][i]text[/i][/b][/quote]"},
+            {"[b][b][b]text[/b][/b][/b]"}
+        };
+    } 
+    
     @DataProvider
     public String[][] validMessages() {
-        return new String[][]{ // {"message"}
-                {"[b][/b][b][/b][u][/u][u][/u][u][u][u][/u][/u][/u]"},
-                {"[b][/b][b][/b][u][/u][u]text[/u][u][u][u][/u][/u][/u]text"},
-                {"[u][/u]"},
-                {"text"},
-                {"[*][*][*][*][*][*][*][*][*][*][*][*][*][*][*]"},
-                {repeat("[b]",50)},
-                {"[quote=\"name\"]"+repeat("[b]",49)+"[//quote]"},
-                {repeat("[*]",51)},
-                {repeat("[/u]",50)},
-                {"[quote="+repeat("[/b]",49)+"]text[/quote]"},
-                {repeat("[quote=\"abc\"]text[/quote]",51)},
-                {repeat("[quote][/quote]",100)},
-                {"[quote="+repeat("[b]",50)+"]text[/quote]"},
-                {repeat("[url=http://javatalks.ru/ftopic14473.php]text[/url]", 100)},
-                {repeat("[ERROR]", 100)}
+        return new String[][] {
+            {"[b][b]text"},
+            {"[qoute][b]text[/b][/qoute]"},
+            {"[qoute name=\"name\"][b]text[/b][/qoute]"},
+            {"[*][*][*][*][*]"},
+            {"[/b][/b][/b][/b][/b]"},
+            {"[b]a[/b]b[b]c[/b]d[b]e[/b]a[b]b[/b]c[b]d[/b]e"},
+            {"[z][z][z][z][z][z][z][z][z]"}
         };
-    }
-
-    @DataProvider
-    public String[][] tooDeepNestingMessages() {
-        return new String[][]{ // {"message"}
-                {repeat("[b]",51)},
-                {repeat("[color][u]",50)},
-                {repeat("[/u]",51)},
-                {"[quote=\"name\"]"+repeat("[b]",50)+"[//quote]"},
-                {"[quote=\"Имя%%%+===hhh\"]"+repeat("[b]",50)+"[//quote]"},
-                {"[quote="+repeat("[b]",51)+"]text[//quote]"},
-                {repeat("[quote=[url=123]]",51)},
-                {repeat("[quote=\"\"]",51)},
-                {"[quote=\""+repeat("[url=123]",51)+"\"]"}
-        };
-    }
-
-    private void assertInvalid(String toValidate) {
-        assertInvalid(toValidate, null);
-    }
+    } 
 }
