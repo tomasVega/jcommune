@@ -68,7 +68,7 @@
       </div>
 
       <div class="control-group">
-          <label class="string optional" style="cursor: pointer;"><input type="checkbox" name="_spring_security_remember_me" class="form-check-radio-box" checked="checked"><spring:message code="label.auto_logon"/></label>
+          <label class="rememberme-lbl"><input type="checkbox" name="_spring_security_remember_me" class="form-check-radio-box" checked="checked"><spring:message code="label.auto_logon"/></label>
       </div>
 
       <div class="form-actions">
